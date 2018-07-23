@@ -8,5 +8,5 @@ census00 %>%
 
 acs15 <- load_variables(2016, "acs5", cache = TRUE)
 acs15 %>%
-  filter(grepl("Median household", label)) %>%
+  filter(grepl("opulation", label)) %>%
   View()

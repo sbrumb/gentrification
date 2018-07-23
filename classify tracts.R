@@ -23,70 +23,95 @@ hh_inc_2000_nospatial <- read_csv("data/LTDB_Std_2000_Sample.csv", guess_max = 2
   select(GEOID = TRTID10, estimate_2000 = HINC00) %>%
   mutate(GEOID = as.character(GEOID))
 
-hh_inc_2016 <- get_acs(geography = "tract", variables = "B19013_001E", 
-                       state = c("DC", "VA", "MD"), geometry = TRUE, year = 2016)
+# hh_inc_2000_msa <- get_decennial(geography = "metropolitan statistical area/micropolitan statistical area", 
+#                                  variables = "P053001", geometry = FALSE, year = 2000)
 
-hh_inc <- hh_inc_2016 %>%
-  left_join(hh_inc_2000_nospatial) %>%
-  mutate(estimate_2016 = estimate)
+us <- unique(fips_codes$state)[1:51]
+
+hh_inc_2016 <- reduce(
+  map(us, function(x) {
+    get_acs(geography = "tract", variables = "B19013_001", 
+            state = x, geometry = TRUE)
+  }), 
+  rbind
+)
+
+hh_inc_2016_msa_src <- get_acs(geography = "metropolitan statistical area/micropolitan statistical area",
+                           variables = c("B01003_001", "B19013_001"), year = 2016)
+
+hh_inc_2016_msa <- hh_inc_2016_msa_src %>%
+  spread(variable, estimate) %>%
+  group_by(GEOID) %>%
+  summarize(NAME = first(NAME),
+            population = min(B01003_001, na.rm = TRUE),
+            median_2016 = min(B19013_001, na.rm = TRUE)) %>%
+  arrange(desc(population)) %>%
+  head(100) %>%
+  rename(msa = GEOID)
 
 metros <- core_based_statistical_areas(cb = TRUE)
 metros_wash <- metros %>%
-  filter(NAME %in% c("Washington-Arlington-Alexandria, DC-VA-MD-WV",
-                     "Baltimore-Columbia-Towson, MD",
-                     "Richmond, VA")) %>%
-  select(metro_name = NAME)
+  select(metro_name = NAME,
+         msa = GEOID) %>%
+  right_join(hh_inc_2016_msa)
 
-hh_inc_dmv <- st_join(hh_inc, metros_wash, join = st_within, 
-                             left = FALSE)
+hh_inc_2016_with <- st_join(hh_inc_2016, metros_wash, join = st_within, 
+                      left = FALSE)
 
-hh_inc_dmv <- hh_inc_dmv %>%
+hh_inc_2016_with <- hh_inc_2016_with %>%
+  rename(estimate_2016 = estimate)
+
+hh_inc <- hh_inc_2016_with %>%
+  left_join(hh_inc_2016_msa, by = "msa") %>%
+  left_join(hh_inc_2000_nospatial, by = "GEOID")
+
+hh_inc_allmetros <- hh_inc %>%
   group_by(metro_name) %>%
   mutate(decile_2000 = ntile(estimate_2000, 10),
          decile_2016 = ntile(estimate_2016, 10),
-         median_2000 = median(estimate_2000, na.rm = TRUE),
-         median_2016 = median(estimate_2016, na.rm = TRUE),
          change_d = decile_2016 - decile_2000,
          change = cut(change_d, breaks = c(-Inf, -2, 2, Inf))) %>%
   ungroup()
 
-hh_inc_dmv$change <- hh_inc_dmv$change %>%
+hh_inc_allmetros$change <- hh_inc_allmetros$change %>%
   fct_recode("Declining" = "(-Inf,-2]",
                                    "Neither" = "(-2,2]",
                                    "Gentrifying" = "(2, Inf]")
 
-hh_inc_dmv <- hh_inc_dmv %>%
+hh_inc_allmetros <- hh_inc_allmetros %>%
   mutate(change = ifelse(decile_2000 > 4 & change == "Gentrifying", "Neither", as.character(change)),
          change = ifelse(decile_2016 > 4 & change == "Declining", "Neither", as.character(change)),
          change = as.factor(change))
 
-hh_inc_change$change %>% levels()
+hh_inc_allmetros$change %>% levels()
 
-dmv_geom <- hh_inc_dmv %>%
+hh_inc_leaflet <- hh_inc_allmetros %>%
+  filter(grepl("OH", metro_name)) %>%
   as("Spatial")
 
-pal <- colorFactor(palette="plasma", domain = dmv_geom$change,
+pal <- colorFactor(palette="viridis", domain = hh_inc_leaflet$change,
                           na.color="transparent")
 
 labels <- sprintf(
   "<strong>%s</strong><br/>
   Median household income (2000 decile): %g<br/>
   Median household income (2016 decile): %g<br/>
-  Median metro household income (2000): %g<br/>
-  Median metrohousehold income (2016): %g",
-  dmv_geom$NAME, dmv_geom$decile_2000, dmv_geom$decile_2016,
-  dmv_geom$median_2000, dmv_geom$median_2016
+  MSA: %s<br/>
+  Median metro household income (2016): %g",
+  hh_inc_leaflet$NAME.x, hh_inc_leaflet$decile_2000, hh_inc_leaflet$decile_2016,
+  hh_inc_leaflet$metro_name, hh_inc_leaflet$median_2016.x
 ) %>% lapply(htmltools::HTML)
 
-leaflet(data = dmv_geom) %>%
+#   addProviderTiles(providers$Stamen.Toner) %>%
+
+leaflet(data = hh_inc_leaflet) %>%
   addTiles() %>%
-  addPolygons(fillColor = ~pal(dmv_geom$change),
+  addPolygons(fillColor = ~pal(hh_inc_leaflet$change),
               stroke = FALSE, fillOpacity = .5,
               label = labels,
               labelOptions = labelOptions(
                 style = list("font-weight" = "normal", padding = "3px 8px"),
                 textsize = "15px",
                 direction = "auto")) %>%
-  addLegend(pal = pal, values = ~dmv_geom$change, opacity = 0.9,
+  addLegend(pal = pal, values = ~hh_inc_leaflet$change, opacity = 0.9,
             title = "Neighborhood type<br/>2000-2016", position = "bottomleft")
-
