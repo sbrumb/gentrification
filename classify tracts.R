@@ -13,18 +13,9 @@ options(tigris_use_cache = TRUE)
 
 source('keys.R')
 
-# hh_inc_2009 <- get_acs(geography = "tract", variables = "B19013_001", 
-#                        state = c("DC", "VA", "MD"), geometry = FALSE, year = 2009)
-# 
-# hh_inc_2000 <- get_decennial(geography = "tract", variables = "P053001", 
-#                  state = c("DC", "VA", "MD"), geometry = FALSE, year = 2000)
-
 hh_inc_2000_nospatial <- read_csv("data/LTDB_Std_2000_Sample.csv", guess_max = 2000) %>%
   select(GEOID = TRTID10, estimate_2000 = HINC00) %>%
   mutate(GEOID = as.character(GEOID))
-
-# hh_inc_2000_msa <- get_decennial(geography = "metropolitan statistical area/micropolitan statistical area", 
-#                                  variables = "P053001", geometry = FALSE, year = 2000)
 
 us <- unique(fips_codes$state)[1:51]
 
@@ -86,7 +77,7 @@ hh_inc_allmetros <- hh_inc_allmetros %>%
 hh_inc_allmetros$change %>% levels()
 
 hh_inc_leaflet <- hh_inc_allmetros %>%
-  filter(grepl("OH", metro_name)) %>%
+  filter(grepl("MD", metro_name)) %>%
   as("Spatial")
 
 pal <- colorFactor(palette="viridis", domain = hh_inc_leaflet$change,
@@ -102,10 +93,9 @@ labels <- sprintf(
   hh_inc_leaflet$metro_name, hh_inc_leaflet$median_2016.x
 ) %>% lapply(htmltools::HTML)
 
-#   addProviderTiles(providers$Stamen.Toner) %>%
 
 leaflet(data = hh_inc_leaflet) %>%
-  addTiles() %>%
+  addProviderTiles(providers$Stamen.Toner) %>%
   addPolygons(fillColor = ~pal(hh_inc_leaflet$change),
               stroke = FALSE, fillOpacity = .5,
               label = labels,
@@ -115,3 +105,31 @@ leaflet(data = hh_inc_leaflet) %>%
                 direction = "auto")) %>%
   addLegend(pal = pal, values = ~hh_inc_leaflet$change, opacity = 0.9,
             title = "Neighborhood type<br/>2000-2016", position = "bottomleft")
+
+# Summary statistics
+
+hh_inc_allmetros %>%
+  as.data.frame() %>%
+  select(-geometry) %>%
+  group_by(metro_name) %>%
+  summarize(gentrifying = sum(change == "Gentrifying", na.rm = TRUE),
+            declining = sum(change == "Declining", na.rm = TRUE),
+            neither = sum(change == "Neither", na.rm = TRUE),
+            total = n()) %>%
+  write_csv("output/tract_types.csv")
+
+hh_inc_allmetros %>%
+  as.data.frame() %>%
+  select(-geometry) %>%
+  summarize(gentrifying = sum(change == "Gentrifying", na.rm = TRUE),
+            declining = sum(change == "Declining", na.rm = TRUE),
+            neither = sum(change == "Neither", na.rm = TRUE),
+            total = n())
+
+hh_inc_allmetros %>%
+  as.data.frame() %>%
+  select(-geometry) %>%
+  group_by(metro_name, change) %>%
+  summarize(count = n()) %>%
+  spread(change, count) %>%
+  write_csv("output/tract_types.csv")
