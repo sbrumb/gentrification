@@ -82,3 +82,5 @@ ggplot() +
   theme(axis.line = element_blank(),
         axis.text = element_blank())
 
+hh_inc_2016_with <- st_join(hh_inc_2016, metros_wash, join = st_within, 
+                            left = FALSE)

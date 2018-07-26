@@ -77,10 +77,10 @@ hh_inc_allmetros <- hh_inc_allmetros %>%
 hh_inc_allmetros$change %>% levels()
 
 hh_inc_leaflet <- hh_inc_allmetros %>%
-  filter(grepl("MD", metro_name)) %>%
+  filter(grepl("DC", metro_name)) %>%
   as("Spatial")
 
-pal <- colorFactor(palette="viridis", domain = hh_inc_leaflet$change,
+pal <- colorFactor(palette="RdYlBu", domain = hh_inc_leaflet$change,
                           na.color="transparent")
 
 labels <- sprintf(
@@ -93,9 +93,9 @@ labels <- sprintf(
   hh_inc_leaflet$metro_name, hh_inc_leaflet$median_2016.x
 ) %>% lapply(htmltools::HTML)
 
-
 leaflet(data = hh_inc_leaflet) %>%
-  addProviderTiles(providers$Stamen.Toner) %>%
+  addProviderTiles(providers$CartoDB.PositronNoLabels) %>%
+  addProviderTiles(providers$OpenMapSurfer.AdminBounds) %>%
   addPolygons(fillColor = ~pal(hh_inc_leaflet$change),
               stroke = FALSE, fillOpacity = .5,
               label = labels,
@@ -103,7 +103,7 @@ leaflet(data = hh_inc_leaflet) %>%
                 style = list("font-weight" = "normal", padding = "3px 8px"),
                 textsize = "15px",
                 direction = "auto")) %>%
-  addLegend(pal = pal, values = ~hh_inc_leaflet$change, opacity = 0.9,
+  addLegend(pal = pal, values = ~hh_inc_leaflet$change, opacity = 0.4,
             title = "Neighborhood type<br/>2000-2016", position = "bottomleft")
 
 # Summary statistics
