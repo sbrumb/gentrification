@@ -1,100 +1,100 @@
-metro_name,gentrifying,declining,neither,total
-"Akron, OH",1,1,168,170
-"Albany-Schenectady-Troy, NY",3,4,208,218
-"Albuquerque, NM",10,15,177,203
-"Allentown-Bethlehem-Easton, PA-NJ",0,5,174,179
-"Atlanta-Sandy Springs-Roswell, GA",51,88,807,951
-"Augusta-Richmond County, GA-SC",5,12,101,119
-"Austin-Round Rock, TX",21,30,296,350
-"Bakersfield, CA",0,0,0,151
-"Baltimore-Columbia-Towson, MD",21,34,616,680
-"Baton Rouge, LA",1,7,142,151
-"Birmingham-Hoover, AL",0,0,0,264
-"Boise City, ID",2,9,84,95
-"Boston-Cambridge-Newton, MA-NH",27,56,907,1005
-"Bridgeport-Stamford-Norwalk, CT",0,0,0,210
-"Buffalo-Cheektowaga-Niagara Falls, NY",4,12,274,298
-"Cape Coral-Fort Myers, FL",15,24,126,167
-"Charleston-North Charleston, SC",6,17,131,156
-"Charlotte-Concord-Gastonia, NC-SC",21,46,468,539
-"Chattanooga, TN-GA",8,10,99,119
-"Chicago-Naperville-Elgin, IL-IN-WI",78,129,1992,2210
-"Cincinnati, OH-KY-IN",10,28,456,498
-"Cleveland-Elyria, OH",5,12,615,636
-"Colorado Springs, CO",0,0,0,136
-"Columbia, SC",8,13,165,191
-"Columbus, OH",8,18,405,433
-"Dallas-Fort Worth-Arlington, TX",35,79,1206,1324
-"Dayton, OH",1,5,202,209
-"Deltona-Daytona Beach-Ormond Beach, FL",7,13,113,133
-"Denver-Aurora-Lakewood, CO",0,0,0,621
-"Des Moines-West Des Moines, IA",2,5,123,131
-"Detroit-Warren-Dearborn, MI",5,46,1231,1299
-"El Paso, TX",4,8,149,162
-"Fresno, CA",0,0,0,199
-"Grand Rapids-Wyoming, MI",6,13,186,205
-"Greensboro-High Point, NC",4,14,149,168
-"Greenville-Anderson-Mauldin, SC",6,9,179,195
-"Harrisburg-Carlisle, PA",2,4,116,124
-"Hartford-West Hartford-East Hartford, CT",0,0,0,289
-"Houston-The Woodlands-Sugar Land, TX",32,66,963,1070
-"Indianapolis-Carmel-Anderson, IN",12,22,362,397
-"Jackson, MS",1,9,119,129
-"Jacksonville, FL",14,28,216,259
-"Kansas City, MO-KS",11,19,485,530
-"Knoxville, TN",3,10,185,204
-"Lakeland-Winter Haven, FL",9,16,128,154
-"Las Vegas-Henderson-Paradise, NV",14,25,439,487
-"Little Rock-North Little Rock-Conway, AR",0,0,0,164
-"Los Angeles-Long Beach-Anaheim, CA",0,0,0,2926
-"Louisville/Jefferson County, KY-IN",3,15,286,306
-"Madison, WI",3,8,119,133
-"McAllen-Edinburg-Mission, TX",13,18,81,113
-"Memphis, TN-MS-AR",3,11,274,314
-"Miami-Fort Lauderdale-West Palm Beach, FL",54,97,1034,1216
-"Milwaukee-Waukesha-West Allis, WI",6,15,407,429
-"Minneapolis-St. Paul-Bloomington, MN-WI",21,46,718,789
-"Nashville-Davidson--Murfreesboro--Franklin, TN",13,23,340,380
-"New Haven-Milford, CT",0,0,0,189
-"New Orleans-Metairie, LA",19,39,334,403
-"New York-Newark-Jersey City, NY-NJ-PA",123,249,4234,4694
-"North Port-Sarasota-Bradenton, FL",4,12,156,172
-"Ogden-Clearfield, UT",0,6,111,117
-"Oklahoma City, OK",7,22,330,363
-"Omaha-Council Bluffs, NE-IA",4,13,238,255
-"Orlando-Kissimmee-Sanford, FL",21,38,330,390
-"Oxnard-Thousand Oaks-Ventura, CA",0,0,0,174
-"Palm Bay-Melbourne-Titusville, FL",6,10,95,113
-"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",34,65,1362,1476
-"Phoenix-Mesa-Scottsdale, AZ",0,0,0,991
-"Pittsburgh, PA",11,33,654,711
-"Portland-Vancouver-Hillsboro, OR-WA",28,50,412,491
-"Providence-Warwick, RI-MA",5,11,349,369
-"Provo-Orem, UT",3,11,115,130
-"Raleigh, NC",4,10,208,224
-"Richmond, VA",4,15,271,295
-"Riverside-San Bernardino-Ontario, CA",0,0,0,822
-"Rochester, NY",2,10,251,270
-"Sacramento--Roseville--Arden-Arcade, CA",0,0,0,486
-"Salt Lake City, UT",7,13,200,223
-"San Antonio-New Braunfels, TX",14,32,407,457
-"San Diego-Carlsbad, CA",0,0,0,627
-"San Francisco-Oakland-Hayward, CA",0,0,0,975
-"San Jose-Sunnyvale-Santa Clara, CA",0,0,0,383
-"Scranton--Wilkes-Barre--Hazleton, PA",7,16,146,170
-"Seattle-Tacoma-Bellevue, WA",29,51,638,719
-"Springfield, MA",4,7,125,139
-"St. Louis, MO-IL",12,33,569,615
-"Stockton-Lodi, CA",0,0,0,139
-"Syracuse, NY",1,4,170,185
-"Tampa-St. Petersburg-Clearwater, FL",31,59,641,743
-"Toledo, OH",2,4,158,164
-"Tucson, AZ",0,0,0,241
-"Tulsa, OK",6,22,244,272
-"Urban Honolulu, HI",3,7,219,244
-"Virginia Beach-Norfolk-Newport News, VA-NC",9,23,379,419
-"Washington-Arlington-Alexandria, DC-VA-MD-WV",72,118,1155,1358
-"Wichita, KS",1,5,146,152
-"Winston-Salem, NC",3,12,135,150
-"Worcester, MA-CT",3,8,160,197
-"Youngstown-Warren-Boardman, OH-PA",1,5,149,155
+metro_name,gentrifying,declining,upgrading,downgrading,Stable,total
+"Akron, OH",1,1,0,5,0,170
+"Albany-Schenectady-Troy, NY",3,4,3,15,0,218
+"Albuquerque, NM",10,15,2,12,0,203
+"Allentown-Bethlehem-Easton, PA-NJ",0,5,1,9,0,179
+"Atlanta-Sandy Springs-Roswell, GA",51,88,19,81,0,951
+"Augusta-Richmond County, GA-SC",5,12,3,7,0,119
+"Austin-Round Rock, TX",21,30,5,21,0,350
+"Bakersfield, CA",0,0,0,0,0,151
+"Baltimore-Columbia-Towson, MD",21,34,4,26,0,680
+"Baton Rouge, LA",1,7,3,11,0,151
+"Birmingham-Hoover, AL",0,0,0,0,0,264
+"Boise City, ID",2,9,3,8,0,95
+"Boston-Cambridge-Newton, MA-NH",27,56,11,55,0,1005
+"Bridgeport-Stamford-Norwalk, CT",0,0,0,0,0,210
+"Buffalo-Cheektowaga-Niagara Falls, NY",4,12,2,11,0,298
+"Cape Coral-Fort Myers, FL",15,24,2,8,0,167
+"Charleston-North Charleston, SC",6,17,8,12,0,156
+"Charlotte-Concord-Gastonia, NC-SC",21,46,15,32,0,539
+"Chattanooga, TN-GA",8,10,1,8,0,119
+"Chicago-Naperville-Elgin, IL-IN-WI",78,129,27,107,0,2210
+"Cincinnati, OH-KY-IN",10,28,5,17,0,498
+"Cleveland-Elyria, OH",5,12,1,18,0,636
+"Colorado Springs, CO",0,0,0,0,0,136
+"Columbia, SC",8,13,4,12,0,191
+"Columbus, OH",8,18,5,20,0,433
+"Dallas-Fort Worth-Arlington, TX",35,79,23,82,0,1324
+"Dayton, OH",1,5,1,9,0,209
+"Deltona-Daytona Beach-Ormond Beach, FL",7,13,10,16,0,133
+"Denver-Aurora-Lakewood, CO",0,0,0,0,0,621
+"Des Moines-West Des Moines, IA",2,5,2,11,0,131
+"Detroit-Warren-Dearborn, MI",5,46,11,46,0,1299
+"El Paso, TX",4,8,5,8,0,162
+"Fresno, CA",0,0,0,0,0,199
+"Grand Rapids-Wyoming, MI",6,13,3,10,0,205
+"Greensboro-High Point, NC",4,14,2,11,0,168
+"Greenville-Anderson-Mauldin, SC",6,9,3,11,0,195
+"Harrisburg-Carlisle, PA",2,4,1,7,0,124
+"Hartford-West Hartford-East Hartford, CT",0,0,0,0,0,289
+"Houston-The Woodlands-Sugar Land, TX",32,66,21,72,0,1070
+"Indianapolis-Carmel-Anderson, IN",12,22,3,26,0,397
+"Jackson, MS",1,9,2,6,0,129
+"Jacksonville, FL",14,28,4,13,0,259
+"Kansas City, MO-KS",11,19,4,21,0,530
+"Knoxville, TN",3,10,1,10,0,204
+"Lakeland-Winter Haven, FL",9,16,3,10,0,154
+"Las Vegas-Henderson-Paradise, NV",14,25,18,45,0,487
+"Little Rock-North Little Rock-Conway, AR",0,0,0,0,0,164
+"Los Angeles-Long Beach-Anaheim, CA",0,0,0,0,0,2926
+"Louisville/Jefferson County, KY-IN",3,15,2,13,0,306
+"Madison, WI",3,8,0,8,0,133
+"McAllen-Edinburg-Mission, TX",13,18,4,7,0,113
+"Memphis, TN-MS-AR",3,11,1,12,0,314
+"Miami-Fort Lauderdale-West Palm Beach, FL",54,97,13,58,0,1216
+"Milwaukee-Waukesha-West Allis, WI",6,15,3,9,0,429
+"Minneapolis-St. Paul-Bloomington, MN-WI",21,46,7,34,0,789
+"Nashville-Davidson--Murfreesboro--Franklin, TN",13,23,5,19,0,380
+"New Haven-Milford, CT",0,0,0,0,0,189
+"New Orleans-Metairie, LA",19,39,6,24,0,403
+"New York-Newark-Jersey City, NY-NJ-PA",123,249,54,180,0,4694
+"North Port-Sarasota-Bradenton, FL",4,12,4,11,0,172
+"Ogden-Clearfield, UT",0,6,2,8,0,117
+"Oklahoma City, OK",7,22,2,17,0,363
+"Omaha-Council Bluffs, NE-IA",4,13,4,18,0,255
+"Orlando-Kissimmee-Sanford, FL",21,38,10,29,0,390
+"Oxnard-Thousand Oaks-Ventura, CA",0,0,0,0,0,174
+"Palm Bay-Melbourne-Titusville, FL",6,10,4,6,0,113
+"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",34,65,8,58,0,1476
+"Phoenix-Mesa-Scottsdale, AZ",0,0,0,0,0,991
+"Pittsburgh, PA",11,33,3,25,0,711
+"Portland-Vancouver-Hillsboro, OR-WA",28,50,10,33,0,491
+"Providence-Warwick, RI-MA",5,11,3,9,0,369
+"Provo-Orem, UT",3,11,4,9,0,130
+"Raleigh, NC",4,10,4,13,0,224
+"Richmond, VA",4,15,1,9,0,295
+"Riverside-San Bernardino-Ontario, CA",0,0,0,0,0,822
+"Rochester, NY",2,10,2,11,0,270
+"Sacramento--Roseville--Arden-Arcade, CA",0,0,0,0,0,486
+"Salt Lake City, UT",7,13,3,8,0,223
+"San Antonio-New Braunfels, TX",14,32,7,20,0,457
+"San Diego-Carlsbad, CA",0,0,0,0,0,627
+"San Francisco-Oakland-Hayward, CA",0,0,0,0,0,975
+"San Jose-Sunnyvale-Santa Clara, CA",0,0,0,0,0,383
+"Scranton--Wilkes-Barre--Hazleton, PA",7,16,1,6,0,170
+"Seattle-Tacoma-Bellevue, WA",29,51,13,52,0,719
+"Springfield, MA",4,7,0,3,0,139
+"St. Louis, MO-IL",12,33,9,27,0,615
+"Stockton-Lodi, CA",0,0,0,0,0,139
+"Syracuse, NY",1,4,1,4,0,185
+"Tampa-St. Petersburg-Clearwater, FL",31,59,10,45,0,743
+"Toledo, OH",2,4,0,7,0,164
+"Tucson, AZ",0,0,0,0,0,241
+"Tulsa, OK",6,22,3,10,0,272
+"Urban Honolulu, HI",3,7,2,14,0,244
+"Virginia Beach-Norfolk-Newport News, VA-NC",9,23,5,17,0,419
+"Washington-Arlington-Alexandria, DC-VA-MD-WV",72,118,27,79,0,1358
+"Wichita, KS",1,5,1,7,0,152
+"Winston-Salem, NC",3,12,1,8,0,150
+"Worcester, MA-CT",3,8,2,5,0,197
+"Youngstown-Warren-Boardman, OH-PA",1,5,2,8,0,155

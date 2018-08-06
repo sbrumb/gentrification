@@ -21,7 +21,7 @@ us <- unique(fips_codes$state)[1:51]
 
 hh_inc_2016 <- reduce(
   map(us, function(x) {
-    get_acs(geography = "tract", variables = "B19013_001", 
+    get_acs(geography = "tract", variables = c("B01003_001", "B19013_001"), 
             state = x, geometry = TRUE)
   }), 
   rbind
@@ -49,10 +49,18 @@ metros_wash <- metros %>%
 hh_inc_2016_with <- st_join(hh_inc_2016, metros_wash, join = st_within, 
                       left = FALSE)
 
-hh_inc_2016_with <- hh_inc_2016_with %>%
-  rename(estimate_2016 = estimate)
+hh_inc_2016_with2 <- hh_inc_2016_with %>%
+  spread(variable, estimate_2016) %>%
+  rename(estimate_2016 = B19013_001,
+         population_2016 = B01003_001) %>%
+  group_by(GEOID) %>%
+  summarize(msa = first(msa),
+            name = first(NAME.x),
+            metro_name = first(metro_name),
+            estimate_2016 = estimate_2016[which(!is.na(estimate_2016))[1]],
+            population_2016 = population_2016[which(!is.na(population_2016))[1]])
 
-hh_inc <- hh_inc_2016_with %>%
+hh_inc <- hh_inc_2016_with2 %>%
   left_join(hh_inc_2016_msa, by = "msa") %>%
   left_join(hh_inc_2000_nospatial, by = "GEOID")
 
@@ -66,45 +74,27 @@ hh_inc_allmetros <- hh_inc %>%
 
 hh_inc_allmetros$change <- hh_inc_allmetros$change %>%
   fct_recode("Declining" = "(-Inf,-2]",
-                                   "Neither" = "(-2,2]",
+                                   "Stable" = "(-2,2]",
                                    "Gentrifying" = "(2, Inf]")
 
 hh_inc_allmetros <- hh_inc_allmetros %>%
-  mutate(change = ifelse(decile_2000 > 4 & change == "Gentrifying", "Neither", as.character(change)),
-         change = ifelse(decile_2016 > 4 & change == "Declining", "Neither", as.character(change)),
+  mutate(change = ifelse(decile_2000 > 4 & change == "Gentrifying", "Upgrading", as.character(change)),
+         change = ifelse(decile_2016 > 4 & change == "Declining", "Downgrading", as.character(change)),
+         change = ifelse(decile_2000 <= 4 & decile_2016 <= 4 & change == "Stable", "Stable low-income", as.character(change)),
          change = as.factor(change))
 
 hh_inc_allmetros$change %>% levels()
 
-hh_inc_leaflet <- hh_inc_allmetros %>%
-  filter(grepl("DC", metro_name)) %>%
-  as("Spatial")
+uspop2016 <- 318558162
 
-pal <- colorFactor(palette="RdYlBu", domain = hh_inc_leaflet$change,
-                          na.color="transparent")
-
-labels <- sprintf(
-  "<strong>%s</strong><br/>
-  Median household income (2000 decile): %g<br/>
-  Median household income (2016 decile): %g<br/>
-  MSA: %s<br/>
-  Median metro household income (2016): %g",
-  hh_inc_leaflet$NAME.x, hh_inc_leaflet$decile_2000, hh_inc_leaflet$decile_2016,
-  hh_inc_leaflet$metro_name, hh_inc_leaflet$median_2016.x
-) %>% lapply(htmltools::HTML)
-
-leaflet(data = hh_inc_leaflet) %>%
-  addProviderTiles(providers$CartoDB.PositronNoLabels) %>%
-  addProviderTiles(providers$OpenMapSurfer.AdminBounds) %>%
-  addPolygons(fillColor = ~pal(hh_inc_leaflet$change),
-              stroke = FALSE, fillOpacity = .5,
-              label = labels,
-              labelOptions = labelOptions(
-                style = list("font-weight" = "normal", padding = "3px 8px"),
-                textsize = "15px",
-                direction = "auto")) %>%
-  addLegend(pal = pal, values = ~hh_inc_leaflet$change, opacity = 0.4,
-            title = "Neighborhood type<br/>2000-2016", position = "bottomleft")
+hh_inc_allmetros %>%
+  as.data.frame() %>%
+  select(-geometry) %>%
+  group_by(change) %>%
+  summarize(count = n(),
+            population = sum(population_2016),
+            uspop_pct = percent_format()(population/uspop2016)) %>%
+  View()
 
 # Summary statistics
 
@@ -114,7 +104,9 @@ hh_inc_allmetros %>%
   group_by(metro_name) %>%
   summarize(gentrifying = sum(change == "Gentrifying", na.rm = TRUE),
             declining = sum(change == "Declining", na.rm = TRUE),
-            neither = sum(change == "Neither", na.rm = TRUE),
+            upgrading = sum(change == "Upgrading", na.rm = TRUE),
+            downgrading = sum(change == "Downgrading", na.rm = TRUE),
+            Stable = sum(change == "Other", na.rm = TRUE),
             total = n()) %>%
   write_csv("output/tract_types.csv")
 
@@ -123,7 +115,9 @@ hh_inc_allmetros %>%
   select(-geometry) %>%
   summarize(gentrifying = sum(change == "Gentrifying", na.rm = TRUE),
             declining = sum(change == "Declining", na.rm = TRUE),
-            neither = sum(change == "Neither", na.rm = TRUE),
+            upgrading = sum(change == "Upgrading", na.rm = TRUE),
+            downgrading = sum(change == "Downgrading", na.rm = TRUE),
+            other = sum(change == "Other", na.rm = TRUE),
             total = n())
 
 hh_inc_allmetros %>%
@@ -131,5 +125,4 @@ hh_inc_allmetros %>%
   select(-geometry) %>%
   group_by(metro_name, change) %>%
   summarize(count = n()) %>%
-  spread(change, count) %>%
-  write_csv("output/tract_types.csv")
+  spread(change, count)
