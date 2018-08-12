@@ -5,3 +5,4 @@ gentrification.Rproj
 .Rhistory
 .RData
 .Ruserdata
+output/*.csv
