@@ -10,10 +10,27 @@ library(ggrepel)
 library(tigris)
 library(leaflet)
 
-tod_db <- read_csv('data/tod_database_download.csv')
+tod_db <- read_csv('data/tod_database_download.csv') %>%
+  mutate(POINT_LON = round(Longitude, 2),
+         POINT_LAT = round(Latitude, 2))
+
 distance <- set_units(.5, miles) %>% set_units(meters)
 
 #   filter(grepl("COURTHOUSE", `Station Name`) == TRUE) %>%
+
+ipcd <- read_csv('data/834637404_T_TRANSNET_FACILITY.csv', guess_max = 500) %>%
+  select(-X48) %>%
+  mutate(POINT_LON = round(POINT_LON, 2),
+         POINT_LAT = round(POINT_LAT, 2))
+
+merge_naive <- ipcd %>%
+  left_join(tod_db) %>%
+  mutate(YEAR = as.numeric(`Year Opened`))
+
+summary(merge_naive$YEAR)
+
+tod_existing <- tod_db %>%
+  filter(Buffer == "Existing Transit")
 
 tod_courthouse <- tod_db %>%
   filter(Buffer == "Existing Transit") %>%
