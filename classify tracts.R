@@ -8,177 +8,127 @@ library(ggspatial)
 library(ggmap)
 library(leaflet)
 library(scales)
-options(tigris_class = "sf")
-options(tigris_use_cache = TRUE)
 library(stringr)
 
-source('keys.R')
-uspop2016 <- 318558162
+options(tigris_class = "sf")
+options(tigris_use_cache = TRUE)
 
-hh_inc_2000_nospatial <- read_csv("data/LTDB_Std_2000_Sample.csv",
+source('keys.R')
+
+# TODO: Add and use 'year' variable to simplify updates
+
+uspop2000 <- 281421906
+uspop2015 <- 321039839 # Census 2017 population estimates
+
+hhinc_2000_ltdb <- read_csv("data/LTDB_Std_2000_Sample.csv",
                                   guess_max = 2000) %>%
-  select(GEOID = TRTID10, estimate_2000 = HINC00) %>%
+  select(GEOID = TRTID10, est_2000 = HINC00) %>%
   mutate(GEOID = str_pad(as.character(GEOID), 11, pad = "0"))
 
-us <- unique(fips_codes$state)[1:51]
+us_fips <- unique(fips_codes$state)[1:51]
 
-hh_inc_2016 <- reduce(
-  map(us, function(x) {
+hhinc_2015 <- reduce(
+  map(us_fips, function(x) {
     get_acs(geography = "tract", variables = c("B01003_001", "B19013_001"),
-            state = x, geometry = TRUE)
+            state = x, year = 2015, geometry = TRUE)
   }),
   rbind
 )
 
-
-hh_inc_2016_msa_src <- get_acs(
+hhinc_2015_msa_src <- get_acs(
   geography = "metropolitan statistical area/micropolitan statistical area",
-  variables = c("B01003_001", "B19013_001"), year = 2016)
+  variables = c("B01003_001", "B19013_001"), year = 2015)
 
-hh_inc_2016_msa <- hh_inc_2016_msa_src %>%
+hhinc_2015_msa <- hhinc_2015_msa_src %>%
   spread(variable, estimate) %>%
   group_by(GEOID) %>%
   summarize(NAME = first(NAME),
             population = min(B01003_001, na.rm = TRUE),
-            median_2016 = min(B19013_001, na.rm = TRUE)) %>%
+            msa_median_2015 = min(B19013_001, na.rm = TRUE)) %>%
   arrange(desc(population)) %>%
   head(100) %>%
   rename(msa = GEOID)
 
-hh_inc_2010 <- reduce(
-  map(us, function(x) {
-    get_acs(geography = "tract", variables = c("B19013_001"),
-            state = x, year = 2010)
-  }),
-  rbind
-)
+cbsas <- core_based_statistical_areas(cb = TRUE)
 
-hh_inc_2010 <- hh_inc_2010 %>%
-  rename(estimate_2010 = estimate) %>%
-  select(-NAME, -variable, -moe)
-
-metros <- core_based_statistical_areas(cb = TRUE)
-metros_join <- metros %>%
+hhinc_2015_spatial <- cbsas %>%
   select(metro_name = NAME,
          msa = GEOID) %>%
-  right_join(hh_inc_2016_msa)
+  right_join(hhinc_2015_msa)
 
-hh_inc_2016_with <- st_join(hh_inc_2016, metros_join, join = st_within,
+# TODO: Check warning message: "although coordinates are longitude/latitude,
+# st_within assumes that they are planar"
+hhinc_2015_within <- st_join(hhinc_2015, hhinc_2015_spatial, join = st_within,
                       left = FALSE)
 
-hh_inc_2016_with2 <- hh_inc_2016_with %>%
+hhinc_2015_within2 <- hhinc_2015_within %>%
   spread(variable, estimate) %>%
-  rename(estimate_2016 = B19013_001,
-         population_2016 = B01003_001) %>%
+  rename(est_2015 = B19013_001,
+         pop_2015 = B01003_001) %>%
   group_by(GEOID) %>%
   summarize(msa = first(msa),
             name = first(NAME.x),
             metro_name = first(metro_name),
-            estimate_2016 = estimate_2016[which(!is.na(estimate_2016))[1]],
-            population_2016 = population_2016[which(!is.na(population_2016))[1]])
+            est_2015 = est_2015[which(!is.na(est_2015))[1]],
+            pop_2015 = pop_2015[which(!is.na(pop_2015))[1]])
 
-# hh_inc <- hh_inc_2016_with2 %>%
-#   left_join(hh_inc_2016_msa, by = "msa") %>%
-#   left_join(hh_inc_2000_nospatial, by = "GEOID")
+hhinc_allyears <- hhinc_2015_within2 %>%
+  left_join(hhinc_2015_msa, by = "msa") %>%
+  left_join(hhinc_2000_ltdb, by = "GEOID")
 
-hh_inc <- hh_inc_2016_with2 %>%
-  left_join(hh_inc_2016_msa, by = "msa") %>%
-  left_join(hh_inc_2010, by = "GEOID")
-
-
-# hh_inc_allmetros <- hh_inc %>%
-#   group_by(metro_name) %>%
-#   mutate(decile_2000 = ntile(estimate_2000, 10),
-#          decile_2016 = ntile(estimate_2016, 10),
-#          change_d = decile_2016 - decile_2000,
-#          change = cut(change_d, breaks = c(-Inf, -2, 2, Inf))) %>%
-#   ungroup()
-
-hh_inc_allmetros <- hh_inc %>%
+hhinc_allmetros <- hhinc_allyears %>%
   group_by(metro_name) %>%
-  mutate(decile_2010 = ntile(estimate_2010, 10),
-         decile_2016 = ntile(estimate_2016, 10),
-         change_d = decile_2016 - decile_2010,
-         change = cut(change_d, breaks = c(-Inf, -2, 2, Inf))) %>%
+  mutate(decile_2000 = ntile(est_2000, 10),
+         decile_2015 = ntile(est_2015, 10),
+         change_d = decile_2015 - decile_2000,
+         type = cut(change_d, breaks = c(-Inf, -2, 2, Inf))) %>%
   ungroup()
 
-hh_inc_allmetros$change <- hh_inc_allmetros$change %>%
+# TODO: Refactor next two commands
+hhinc_allmetros$type <- hhinc_allmetros$type %>%
   fct_recode("Declining" = "(-Inf,-2]",
                                    "Stable" = "(-2,2]",
                                    "Gentrifying" = "(2, Inf]")
 
-# hh_inc_allmetros <- hh_inc_allmetros %>%
-#   mutate(change = ifelse(decile_2000 > 4 & change == "Gentrifying",
-#                          "Upgrading", as.character(change)),
-#          change = ifelse(decile_2016 > 4 & change == "Declining",
-#                          "Downgrading", as.character(change)),
-#          change = ifelse(decile_2000 <= 4 & decile_2016 <= 4 &
-#                            change == "Stable",
-#                          "Stable low-income", as.character(change)),
-#          change = as.factor(change))
+# Expand upon Landis (2015) by distinguishing between gentrifying/upgrading,
+# declining/downgrading, and stable/stable low-income
+hhinc_allmetros <- hhinc_allmetros %>%
+  mutate(type = ifelse(decile_2000 > 4 & type == "Gentrifying",
+                         "Upgrading", as.character(type)),
+         type = ifelse(decile_2015 > 4 & type == "Declining",
+                         "Downgrading", as.character(type)),
+         type = ifelse(decile_2000 <= 4 & decile_2015 <= 4 &
+                           type == "Stable",
+                         "Stable low-income", as.character(type)),
+         type = as.factor(type))
 
-hh_inc_allmetros <- hh_inc_allmetros %>%
-  mutate(change = ifelse(decile_2010 > 4 & change == "Gentrifying",
-                         "Upgrading", as.character(change)),
-         change = ifelse(decile_2016 > 4 & change == "Declining",
-                         "Downgrading", as.character(change)),
-         change = ifelse(decile_2010 <= 4 & decile_2016 <= 4 &
-                           change == "Stable",
-                         "Stable low-income", as.character(change)),
-         change = as.factor(change))
+# What percentage of the population lives in each type? (This is for the
+# 100 largest metropolitan areas.)
 
-hh_inc_allmetros$change %>% levels()
+usmetropop2015 <- sum(hhinc_allmetros$pop_2015)
 
-hh_inc_allmetros %>%
+# TODO: Investigate NAs  
+hhinc_allmetros %>%
   as.data.frame() %>%
   select(-geometry) %>%
-  group_by(change) %>%
+  group_by(type) %>%
   summarize(count = n(),
-            population = sum(population_2016),
-            uspop_pct = percent_format()(population/uspop2016)) %>%
+            population = sum(pop_2015),
+            uspop_pct = (population/usmetropop2015)) %>%
+  mutate(uspop_pct = percent(uspop_pct, accuracy = .1)) %>%
   View()
 
-hh_inc_allmetros %>%
+# Tabulations by metropolitan area
+hhinc_allmetros %>%
   as.data.frame() %>%
   select(-geometry) %>%
-  filter(grepl("iverside", metro_name)) %>%
-  View()
-
-# Summary statistics
-
-hh_inc_allmetros %>%
-  as.data.frame() %>%
-  select(-geometry) %>%
-  group_by(metro_name, change) %>%
+  group_by(metro_name, type) %>%
   summarize(count = n()) %>%
-  spread(change, count)
+  spread(type, count, fill = 0) %>%
+  write_csv("output/tracts_msa.csv")
 
-hh_inc_allmetros %>%
+# Census tracts
+hhinc_allmetros %>%
   as.data.frame() %>%
   select(-geometry) %>%
-  group_by(metro_name) %>%
-  summarize(gentrifying = sum(change == "Gentrifying", na.rm = TRUE),
-            declining = sum(change == "Declining", na.rm = TRUE),
-            upgrading = sum(change == "Upgrading", na.rm = TRUE),
-            downgrading = sum(change == "Downgrading", na.rm = TRUE),
-            stable = sum(change == "Stable", na.rm = TRUE),
-            stableli = sum(change == "Stable low-income", na.rm = TRUE),
-            total = n()) %>%
-  write_csv("output/tract_types.csv")
-
-<<<<<<< HEAD
-hh_inc_allmetros %>%
-  as.data.frame() %>%
-  select(-geometry) %>%
-  group_by(metro_name, change) %>%
-  summarize(count = n()) %>%
-  spread(change, count) %>%
-  replace_na(list(Gentrifying = 0)) %>%
-  mutate(Total = sum(Declining, Downgrading, Gentrifying, Stable,
-           `Stable low-income`, Upgrading, na.rm = TRUE),
-         Percent_Gentrifying = Gentrifying / Total) %>%
-    arrange(desc(Percent_Gentrifying)) %>%
-  mutate(Percent_Gentrifying = percent(Percent_Gentrifying)) %>%
-  write_csv("output/tract_types_metro.csv")
-=======
->>>>>>> 79ed52c9ad10ef8dfe7a8cdf37a7eb5997ad34ce
+  write_csv("output/classification.csv")
