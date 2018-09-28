@@ -6,3 +6,4 @@ gentrification.Rproj
 .RData
 .Ruserdata
 output/*.csv
+data/*.*
