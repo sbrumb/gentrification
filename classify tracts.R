@@ -35,6 +35,10 @@ hhinc_2015 <- reduce(
   rbind
 )
 
+hhinc_2000_msa_src <- get_decennial(
+  geography = "metropolitan statistical area/micropolitan statistical area",
+  variables = c("P053001"), year = 2000)
+
 hhinc_2015_msa_src <- get_acs(
   geography = "metropolitan statistical area/micropolitan statistical area",
   variables = c("B01003_001", "B19013_001"), year = 2015)
@@ -88,7 +92,7 @@ hhinc_allmetros <- hhinc_allyears %>%
 hhinc_allmetros$type <- hhinc_allmetros$type %>%
   fct_recode("Declining" = "(-Inf,-2]",
                                    "Stable" = "(-2,2]",
-                                   "Gentrifying" = "(2, Inf]")
+                                   "Gentrifying" = "(2,Inf]")
 
 # Expand upon Landis (2015) by distinguishing between gentrifying/upgrading,
 # declining/downgrading, and stable/stable low-income
@@ -131,4 +135,5 @@ hhinc_allmetros %>%
 hhinc_allmetros %>%
   as.data.frame() %>%
   select(-geometry) %>%
+  mutate(GEOID = as.character(GEOID)) %>%
   write_csv("output/classification.csv")
