@@ -15,14 +15,10 @@ options(tigris_use_cache = TRUE)
 
 tod_distance <- set_units(.5, miles) %>% set_units(meters)
 
-tod05 <- read_csv("output/bg_stations_2005.csv")
-tod07 <- read_csv("output/bg_stations_2007.csv")
-tod09 <- read_csv("output/bg_stations_2009.csv")
-tod11 <- read_csv("output/bg_stations_2011.csv")
-tod13 <- read_csv("output/bg_stations_2013.csv")
-tod15 <- read_csv("output/bg_stations_2015.csv")
-
-tod <- rbind(tod05, tod07, tod09, tod11, tod13, tod15)
+tod_files <- dir(path = "output", pattern = "bg_stations_.*", full.names = TRUE)
+tod <- tod_files %>%
+  map(read_csv) %>%
+  reduce(rbind)
 
 tod %>%
   group_by(year) %>%
