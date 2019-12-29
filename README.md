@@ -1,4 +1,5 @@
-# gentrification
+# Identifying neighborhood change
+
 Classify Census tracts in the United States as gentrifying or declining using the 3-D "double-decile difference" methodology [Landis (2015)](http://www.penniur.upenn.edu/uploads/media/John-Landis-Working-Paper-Neighborhood-Change.pdf) with slight modifications.
 
 You will need to create a "keys.R" file with your Census API key using the following format:
